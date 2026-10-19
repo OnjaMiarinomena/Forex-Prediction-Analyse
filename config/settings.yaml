@@ -1,0 +1,81 @@
+# Paramètres. Tous les seuils sont à valider avant tout usage réel.
+symbol: EURUSD
+
+analysis:
+  default_tf: M30       # timeframe proposé au démarrage (M5, M15, M30, H1)
+  atr_period: 14
+  swing_k: 2            # bougies de part et d'autre pour confirmer un swing
+  ob_lookback: 10
+  impulse_atr: 1.0
+
+data:
+  max_data_age_minutes: 30
+
+risk:
+  equity: 1000.0              # capital fictif de calcul, dans la devise du compte
+  risk_pct: 1.0
+  pip_size: 0.0001
+  pip_value_usd_per_lot: 10.0 # compte en USD : à vérifier chez le courtier
+  target_rr: 2.0
+  min_rr: 1.5
+  max_sl_pips: 30.0
+  max_spread_pips: 1.5
+  sl_buffer_atr: 0.5
+
+probabilities:
+  horizon_minutes: 60   # mouvement observé sur 1 heure après chaque bougie
+  threshold_pips: 3.0   # mouvement minimal pour être classé HAUSSIER ou BAISSIER
+  min_samples: 30       # en dessous, l'estimation est signalée comme peu fiable
+
+decision:
+  min_edge: 0.10        # écart minimal hausse/baisse (10 points) pour les probabilités
+  heatmap_min_pips: 1.0 # mouvement moyen minimal de la cellule horaire, en valeur absolue
+
+deriv:
+  symbol: frxEURUSD   # symbole Deriv de EUR/USD
+  app_id: "1089"      # identifiant public de test ; pas un secret
+  url: wss://ws.derivws.com/websockets/v3   # adresse du serveur ; à changer si erreur 520 persistante
+
+oanda:
+  instrument: EUR_USD
+  environment: practice # practice (démo) ou live : passer en live est une décision explicite
+  bars: 20000           # nombre de bougies M5 récupérées (~ 2 à 3 mois de marché)
+
+events:
+  file: data/events.csv     # rempli à la main depuis un calendrier officiel (time_utc,title,impact)
+  impact: high
+  block_before_min: 30      # pas de signal dans les 30 min avant une annonce à fort impact
+  block_after_min: 30       # ni dans les 30 min qui suivent
+
+chart:
+  bars: 120                 # nombre de bougies affichées
+
+news:
+  cache_minutes: 15
+  max_items: 6
+  feeds:                       # adresses à vérifier avant usage
+    - name: BCE
+      currency: EUR
+      url: https://www.ecb.europa.eu/rss/press.xml
+    - name: Fed
+      currency: USD
+      url: https://www.federalreserve.gov/feeds/press_all.xml
+
+confirmations:
+  h1_trend: true          # tendance H1 : EMA 50 et EMA 200 dans le sens du trade
+  rsi: true               # RSI M5 : pas de surachat pour un achat, pas de survente pour une vente
+  volatility: true        # ATR M5 dans une plage normale
+  rsi_period: 14
+  rsi_overbought: 70
+  rsi_oversold: 30
+  vol_lookback: 100       # nombre de bougies pour la médiane de l'ATR
+  vol_min_ratio: 0.6      # en dessous : marché trop calme
+  vol_max_ratio: 2.0      # au-dessus : marché trop agité
+
+calendar:
+  cache_minutes: 60
+  timezone: America/New_York      # fuseau du flux ; converti en UTC pour l'affichage
+  currencies: [EUR, USD]
+  feeds:                          # adresses à vérifier avant usage
+    - https://nfs.faireconomy.media/ff_calendar_thisweek.xml
+    - https://nfs.faireconomy.media/ff_calendar_nextweek.xml
